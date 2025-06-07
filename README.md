@@ -1,1 +1,1 @@
-# VICKblockchain
+# VICK Blockchain Project
