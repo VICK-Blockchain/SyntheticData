@@ -1,3 +1,7 @@
+import pandas as pd
+import numpy as np
+import openpyxl
+
 Gender_makeup = {
     "Female": 269235,
     "Male": 201932,
@@ -20,6 +24,10 @@ Ethnicity_makeup = {
     "Not Hispanic or Latino": 21884
 }
 
+Language_makeup = {
+
+}
+
 def makeup_statistics(dictionary):
     total = 0
     for key, value in dictionary.items():
@@ -29,4 +37,70 @@ def makeup_statistics(dictionary):
         probability = value / total
         print(f'The object {key} with a frequency of {value} has probability {probability}.')
 
-makeup_statistics(Gender_makeup)
+#makeup_statistics(Gender_makeup)
+#makeup_statistics(Race_makeup)
+#makeup_statistics(Ethnicity_makeup)
+
+
+total = 0
+# Define Categories and their probabilities
+Categories = []
+Probabilities = []
+
+for key, value in Gender_makeup.items():
+    total += value
+for key, value in Gender_makeup.items():
+    probability = value / total
+    Categories.append(key)
+    Probabilities.append(probability)
+
+# Generation of Synthetic Data
+num_samples = 100
+
+synthetic_data = np.random.choice(Categories, size=num_samples, p=Probabilities)
+
+# Creating the Pandas DataFrame with Data
+df = pd.DataFrame({"Gender": synthetic_data})
+#print(df.head(20))
+
+
+total = 0
+Categories = []
+Probabilities = []
+
+for key, value in Race_makeup.items():
+    total += value
+for key, value in Race_makeup.items():
+    probability = value / total
+    Categories.append(key)
+    Probabilities.append(probability)
+
+num_samples = 100
+
+synthetic_data = np.random.choice(Categories, size=num_samples, p=Probabilities)
+df["Race"] = synthetic_data
+
+#print(df.head(20))
+
+total = 0
+Categories = []
+Probabilities = []
+
+for key, value in Ethnicity_makeup.items():
+    total += value
+for key, value in Ethnicity_makeup.items():
+    probability = value / total
+    Categories.append(key)
+    Probabilities.append(probability)
+
+num_samples = 100
+
+synthetic_data = np.random.choice(Categories, size=num_samples, p=Probabilities)
+df["Ethnicity"] = synthetic_data
+
+print(df.head(20))
+
+df.to_excel("SyntheticData.xlsx")
+
+
+
