@@ -28,6 +28,10 @@ Language_makeup = {
 
 }
 
+Age_makeup = {
+
+}
+
 def makeup_statistics(dictionary):
     total = 0
     for key, value in dictionary.items():
@@ -55,7 +59,7 @@ for key, value in Gender_makeup.items():
     Probabilities.append(probability)
 
 # Generation of Synthetic Data
-num_samples = 100
+num_samples = 1000
 
 synthetic_data = np.random.choice(Categories, size=num_samples, p=Probabilities)
 
@@ -75,12 +79,16 @@ for key, value in Race_makeup.items():
     Categories.append(key)
     Probabilities.append(probability)
 
-num_samples = 100
+num_samples = 1000
 
 synthetic_data = np.random.choice(Categories, size=num_samples, p=Probabilities)
 df["Race"] = synthetic_data
 
 #print(df.head(20))
+
+
+#Ethnicity Can take Value Hispanic only when the race is not already filled?
+
 
 total = 0
 Categories = []
@@ -93,14 +101,23 @@ for key, value in Ethnicity_makeup.items():
     Categories.append(key)
     Probabilities.append(probability)
 
-num_samples = 100
+num_samples = 1000
 
 synthetic_data = np.random.choice(Categories, size=num_samples, p=Probabilities)
 df["Ethnicity"] = synthetic_data
 
 print(df.head(20))
 
-df.to_excel("SyntheticData.xlsx")
+# Language
+
+
+
+#Age
+
+
+
+
+df.to_excel("SyntheticData.xlsx", index=False)
 
 
 
