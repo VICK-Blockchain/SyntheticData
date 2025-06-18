@@ -87,7 +87,7 @@ df["Race"] = synthetic_data
 #print(df.head(20))
 
 
-#Ethnicity Can take Value Hispanic only when the race is not already filled?
+# Check Ethnicity frequencies
 
 
 total = 0
