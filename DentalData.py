@@ -100,10 +100,15 @@ Language_makeup = {
 }
 
 Age_makeup = {
-    "Less than 25": 63007,
-    "Equal to 25": 3708,
-    "Greater than 25": 172758
+    "GreatEq9LessEq26": 53360,
+    "GreatEq27LessEq45": 63312
 }
+
+Insurance_makeup = {
+    1: 76326,
+    0: 426076
+}
+
 
 def makeup_statistics(dictionary):
     total = 0
@@ -120,17 +125,8 @@ def makeup_statistics(dictionary):
 
 num_samples = 1000
 
-fake = Faker()
-Synthetic_Names = [ ]
-
-for i in range(0, num_samples):
-    Synthetic_Names.append(fake.name())
-
-df = pd.DataFrame({"Patient": Synthetic_Names})
-
-
-
 total = 0
+
 # Define Categories and their probabilities
 Categories = []
 Probabilities = []
@@ -143,11 +139,24 @@ for key, value in Gender_makeup.items():
     Probabilities.append(probability)
 
 # Generation of Synthetic Data
-num_samples = 1000
 
 synthetic_data = np.random.choice(Categories, size=num_samples, p=Probabilities)
+#print(synthetic_data)
+
+fake = Faker()
+Synthetic_Names = [ ]
+
+for item in synthetic_data:
+    if item=="Male":
+        Synthetic_Names.append(fake.name_male())
+    elif item=="Female":
+        Synthetic_Names.append(fake.name_female())
+    else:
+        Synthetic_Names.append(fake.name())
 
 # Creating the Pandas DataFrame with Data
+df = pd.DataFrame({"Patient": Synthetic_Names})
+
 df["Gender"] = synthetic_data
 #print(df.head(20))
 
@@ -163,12 +172,8 @@ for key, value in Race_makeup.items():
     Categories.append(key)
     Probabilities.append(probability)
 
-num_samples = 1000
-
 synthetic_data = np.random.choice(Categories, size=num_samples, p=Probabilities)
 df["Race"] = synthetic_data
-
-#print(df.head(20))
 
 
 # Check Ethnicity frequencies
@@ -183,8 +188,6 @@ for key, value in Ethnicity_makeup.items():
     probability = value / total
     Categories.append(key)
     Probabilities.append(probability)
-
-num_samples = 1000
 
 synthetic_data = np.random.choice(Categories, size=num_samples, p=Probabilities)
 df["Ethnicity"] = synthetic_data
@@ -203,40 +206,49 @@ for key, value in Language_makeup.items():
     Categories.append(key)
     Probabilities.append(probability)
 
-num_samples = 1000
-
 synthetic_data = np.random.choice(Categories, size=num_samples, p=Probabilities)
 df["Language"] = synthetic_data
 
 
 # Age
-
 Age_Data = [ ]
 
-total_ages = 239473
+total_ages = Age_makeup["GreatEq9LessEq26"] + Age_makeup["GreatEq27LessEq45"]
 
+# 9-26 27-45
+# Cant be greater than 45
 for key, value in Age_makeup.items():
-    if key == "Less than 25":
-        Ages = [i for i in range(1, 25)]
+    if key == "GreatEq9LessEq26":
+        Ages = [i for i in range(9, 27)]
         Probability = Age_makeup[key] / total_ages
-        random_ages = random.choices(Ages, k= math.floor(Probability * num_samples))
+        random_ages = random.choices(Ages, k= round(Probability * num_samples))
         Age_Data = Age_Data + random_ages
-    elif key == "Equal to 25":
-        Ages = [25]
+    elif key == "GreatEq27LessEq45":
+        Ages = [i for i in range(27, 46)]
         Probability = Age_makeup[key] / total_ages
-        random_ages = random.choices(Ages, k= math.ceil(Probability * num_samples))
-        Age_Data = Age_Data + random_ages
-    elif key == "Greater than 25":
-        Ages = [i for i in range(25, 90)]
-        Probability = Age_makeup[key] / total_ages
-        random_ages = random.choices(Ages, k=math.floor(Probability * num_samples))
+        random_ages = random.choices(Ages, k= round(Probability * num_samples))
         Age_Data = Age_Data + random_ages
 
 random.shuffle(Age_Data)
-#print(len(Age_Data))
+print(len(Age_Data))
 df["Age"] = Age_Data
 print(df.head(20))
 
+#Insurance
+total = 0
+Categories = []
+Probabilities = []
+
+for key, value in Insurance_makeup.items():
+    total += value
+for key, value in Insurance_makeup.items():
+    probability = value / total
+    Categories.append(key)
+    Probabilities.append(probability)
+
+synthetic_data = np.random.choice(Categories, size=num_samples, p=Probabilities)
+df["Insured"] = synthetic_data
+#
 
 df.to_excel("SyntheticData.xlsx", index=False)
 
