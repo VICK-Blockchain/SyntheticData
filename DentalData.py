@@ -4,7 +4,7 @@ import openpyxl
 import random
 import math
 from faker import Faker
-
+from datetime import datetime, timedelta
 
 Gender_makeup = {
     "Female": 269235,
@@ -109,6 +109,15 @@ Insurance_makeup = {
     0: 426076
 }
 
+Department_makeup = {
+    "UTPB": 42406,
+    "Mobile Dental Van Patient": 6258,
+    "Pediatric Clinic - HMC": 21057,
+    "School 0f Dentistry": 300614,
+    "Special Patient Clinic": 369,
+    "Texas Children's - Greenpoint": 7366,
+    "UT Dentists": 19263
+}
 
 def makeup_statistics(dictionary):
     total = 0
@@ -249,6 +258,90 @@ for key, value in Insurance_makeup.items():
 synthetic_data = np.random.choice(Categories, size=num_samples, p=Probabilities)
 df["Insured"] = synthetic_data
 #
+
+
+# Vaccine to Be Given
+Vaccine = []
+for i in range(len(df)):
+    Vaccine.append("HPV GARDASIL 9")
+
+df["Vaccine"] = Vaccine
+
+# Birthdate
+
+
+
+# Clinic/Office
+total = 0
+
+# Define Categories and their probabilities
+Categories = []
+Probabilities = []
+
+for key, value in Department_makeup.items():
+    total += value
+for key, value in Department_makeup.items():
+    probability = value / total
+    Categories.append(key)
+    Probabilities.append(probability)
+
+synthetic_data = np.random.choice(Categories, size=num_samples, p=Probabilities)
+df["Clinic/Office"] = synthetic_data
+
+# Date Vaccine Given
+
+Dates = [ ]
+for age in df["Age"]:
+    if age <= 13:
+        start_date = datetime(2025, 1, 1)
+        end_date = datetime(2025, 6, 26)
+        Dates.append(fake.date_between(start_date=start_date, end_date=end_date))
+    elif age <= 18:
+        start_date = datetime(2020, 1, 1)
+        end_date = datetime(2025, 6, 26)
+        Dates.append(fake.date_between(start_date=start_date, end_date=end_date).strftime('%Y-%m-%d'))
+    elif age <= 25:
+        start_date = datetime(2015, 1, 1)
+        end_date = datetime(2025, 6, 26)
+        Dates.append(fake.date_between(start_date=start_date, end_date=end_date).strftime('%Y-%m-%d'))
+    elif age <= 35:
+        start_date = datetime(2010, 1, 1)
+        end_date = datetime(2025, 6, 26)
+        Dates.append(fake.date_between(start_date=start_date, end_date=end_date).strftime('%Y-%m-%d'))
+    else:
+        start_date = datetime(2005, 1, 1)
+        end_date = datetime(2025, 6, 26)
+        Dates.append(fake.date_between(start_date=start_date, end_date=end_date).strftime('%Y-%m-%d'))
+
+df["Date Vaccine Given"] = Dates
+
+# Vaccine Manufacturer/Lot Number
+Manufacturer = [ ]
+for i in range(len(df)):
+    Manufacturer.append("Merck & Co")
+
+df["Manufacturer"] = Manufacturer
+
+
+
+# Vaccine Administrator
+
+Names = [ ]
+for i in range(len(df)):
+    last_name = fake.last_name()
+    Names.append('Dr.' + ' ' + last_name)
+
+df["Vaccine Administrator"] = Names
+
+# Child + Gender
+
+
+# Doses Taken
+
+
+
+# Address Info (State)
+
 
 df.to_excel("SyntheticData.xlsx", index=False)
 
