@@ -243,6 +243,11 @@ print(len(Age_Data))
 df["Age"] = Age_Data
 print(df.head(20))
 
+# Birthdate
+
+
+
+
 #Insurance
 total = 0
 Categories = []
@@ -260,14 +265,15 @@ df["Insured"] = synthetic_data
 #
 
 
-# Vaccine to Be Given
-Vaccine = []
+# Vaccine Group (Group: HPV, Trade Name: Gardasil 9)
+Vaccine_Group = []
+Vaccine_TradeName = []
 for i in range(len(df)):
-    Vaccine.append("HPV GARDASIL 9")
+    Vaccine_Group.append("HPV")
+    Vaccine_TradeName.append("Gardasil 9")
 
-df["Vaccine"] = Vaccine
-
-# Birthdate
+df["Vaccine_Group"] = Vaccine_Group
+df["Vaccine_TradeName"] = Vaccine_TradeName
 
 
 
@@ -295,7 +301,7 @@ for age in df["Age"]:
     if age <= 13:
         start_date = datetime(2025, 1, 1)
         end_date = datetime(2025, 6, 26)
-        Dates.append(fake.date_between(start_date=start_date, end_date=end_date))
+        Dates.append(fake.date_between(start_date=start_date, end_date=end_date).strftime('%Y-%m-%d'))
     elif age <= 18:
         start_date = datetime(2020, 1, 1)
         end_date = datetime(2025, 6, 26)
@@ -313,7 +319,7 @@ for age in df["Age"]:
         end_date = datetime(2025, 6, 26)
         Dates.append(fake.date_between(start_date=start_date, end_date=end_date).strftime('%Y-%m-%d'))
 
-df["Date Vaccine Given"] = Dates
+df["Date_Vaccine_Given"] = Dates
 
 # Vaccine Manufacturer/Lot Number
 Manufacturer = [ ]
@@ -331,18 +337,125 @@ for i in range(len(df)):
     last_name = fake.last_name()
     Names.append('Dr.' + ' ' + last_name)
 
-df["Vaccine Administrator"] = Names
+df["Vaccine_Administrator"] = Names
 
 # Child + Gender
+HasChild = {
+    "Under 20": 5.6,
+    "20-29": 49.3,
+    "30-39": 41.8,
+    "40 and older": 3.3
+}
+
+HasChild_List = [ ]
+
+for age in df["Age"]:
+    if age < 15:
+        HasChild_List.append(0)
+    elif 15 <= age <= 20:
+        Categories = [ 1, 0]
+        Probabilities = [0.056, 0.944]
+        HasChild_List.append(np.random.choice(Categories, size=1, p=Probabilities)[0])
+    elif 20 < age < 30:
+        Categories = [ 1, 0]
+        Probabilities = [0.549, 0.451]
+        HasChild_List.append(np.random.choice(Categories, size=1, p=Probabilities)[0])
+    else:
+        Categories = [ 1, 0]
+        Probabilities = [0.967, 0.033]
+        HasChild_List.append(np.random.choice(Categories, size=1, p=Probabilities)[0])
+
+df["Has_Child"] = HasChild_List
+
+ChildGender = [ ]
+Categories = ["Male", "Female"]
+Probabilities = [0.5, 0.5]
+for id in df["Has_Child"]:
+    if id == 0:
+        ChildGender.append("NA")
+    else:
+        ChildGender.append(np.random.choice(Categories, size=1, p=Probabilities)[0])
+
+df["Child_Gender"] = ChildGender
 
 
-# Doses Taken
+#Child Info (Name, Birthdate)
+
+Child_Name = [ ]
+
+for gender in df['Child_Gender']:
+    if gender == "Male":
+        Child_Name.append(fake.first_name_male()+' '+fake.last_name())
+    elif gender == "Female":
+        Child_Name.append(fake.first_name_female()+' '+fake.last_name())
+    else:
+        Child_Name.append("NA")
+
+df["Child_Name"] = Child_Name
+
+
+# Dose (Random between 1-3)
+Dose = [ ]
+
+for i in range(len(df)):
+    Dose.append(np.random.choice([1, 2, 3]))
+
+df["Dose"] = Dose
+
+# Address Info
+
+Address = [ ]
+for i in range(len(df)):
+    Address.append(fake.street_address()+', Houston, TX '+str(np.random.choice([i for i in range(77001, 77533)])))
+
+df["Address"] = Address
+
+# Lot Number (Based on Industry Standards with AA Configuration)
+
+Lot_Numbers = [ ]
+for i in range(len(df)):
+    lot = 'A'
+    numbers = np.random.choice([i for i in range(1,10)], size=5)
+    for number in numbers:
+        lot = lot + str(number)
+    lot = lot+'A'
+    Lot_Numbers.append(lot)
+
+df["Lot_Number"] = Lot_Numbers
+
+# Series (Whether it's a 2 or 3 dose series?)
+Series = [ ]
+for dose in df['Dose']:
+    if dose == 3:
+        Series.append(3)
+    else:
+        Series.append(np.random.choice([2, 3]))
+df["Series"] = Series
+
+
+# Date Vaccine Information Statement Given (Same as Date of Vaccine)
+Date_VIS = [ ]
+for date in df["Date_Vaccine_Given"]:
+    Date_VIS.append(date)
+df["Date_VIS_Given"] = Date_VIS
+
+# Site of Injection
+Site_of_Injection = [ ]
+for i in range(len(df)):
+    Site_of_Injection.append('Deltoid Upper Arm')
+df["Site_of_Injection"] = Site_of_Injection
+
+# Route
+
+
+# Telephone
+
+
+# Email
 
 
 
-# Address Info (State)
-
-
+print(df)
 df.to_excel("SyntheticData.xlsx", index=False)
 
 
