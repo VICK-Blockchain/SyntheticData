@@ -4,7 +4,7 @@ import openpyxl
 import random
 import math
 from faker import Faker
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 Gender_makeup = {
     "Female": 269235,
@@ -128,6 +128,15 @@ def makeup_statistics(dictionary):
         probability = value / total
         print(f'The object {key} with a frequency of {value} has probability {probability}.')
 
+def generate_birth_date(age_in_years):
+    today = datetime.today()
+
+    birth_year = today.year - age_in_years
+
+    approx_birth_date = datetime(birth_year, int(np.random.choice([i for i in range(1,6)])), int(np.random.choice([i for i in range(1,28)]))).strftime('%Y-%m-%d')
+    return approx_birth_date
+
+
 #makeup_statistics(Gender_makeup)
 #makeup_statistics(Race_makeup)
 #makeup_statistics(Ethnicity_makeup)
@@ -157,11 +166,11 @@ Synthetic_Names = [ ]
 
 for item in synthetic_data:
     if item=="Male":
-        Synthetic_Names.append(fake.name_male())
+        Synthetic_Names.append(fake.first_name_male()+' '+fake.last_name())
     elif item=="Female":
-        Synthetic_Names.append(fake.name_female())
+        Synthetic_Names.append(fake.first_name_female()+' '+fake.last_name())
     else:
-        Synthetic_Names.append(fake.name())
+        Synthetic_Names.append(fake.first_name()+' '+fake.last_name())
 
 # Creating the Pandas DataFrame with Data
 df = pd.DataFrame({"Patient": Synthetic_Names})
@@ -244,9 +253,12 @@ df["Age"] = Age_Data
 print(df.head(20))
 
 # Birthdate
+Birth_Date = [ ]
+for age in df["Age"]:
+    date = generate_birth_date(age)
+    Birth_Date.append(date)
 
-
-
+df['Birth_Date'] = Birth_Date
 
 #Insurance
 total = 0
@@ -379,7 +391,7 @@ for id in df["Has_Child"]:
 df["Child_Gender"] = ChildGender
 
 
-#Child Info (Name, Birthdate)
+# Child Info (Name, Birthdate)
 
 Child_Name = [ ]
 
@@ -393,6 +405,35 @@ for gender in df['Child_Gender']:
 
 df["Child_Name"] = Child_Name
 
+# Child Age
+
+Child_Age = [ ]
+for i in range(len(df)):
+    if df["Has_Child"][i] == 0:
+        Child_Age.append("NA")
+    else:
+        if df["Age"][i] <= 18:
+            Child_Age.append(1)
+        elif 18 < df["Age"][i] <= 24:
+            Child_Age.append(2)
+        elif 24 < df["Age"][i] <= 30:
+            Child_Age.append(np.random.choice([3,4,5,6], size=1)[0])
+        elif 30 < df["Age"][i] <= 40:
+            Child_Age.append(np.random.choice([i for i in range(1,15)], size=1)[0])
+        else:
+            Child_Age.append(np.random.choice([i for i in range(10,20)], size=1)[0])
+df["Child_Age"] = Child_Age
+# Child Birth Date
+
+Child_Birth_Date = []
+for age in df["Child_Age"]:
+    if age == "NA":
+        Child_Birth_Date.append("NA")
+    else:
+        date = generate_birth_date(age)
+        Child_Birth_Date.append(date)
+
+df["Child_Birth_Date"] = Child_Birth_Date
 
 # Dose (Random between 1-3)
 Dose = [ ]
@@ -446,13 +487,31 @@ for i in range(len(df)):
 df["Site_of_Injection"] = Site_of_Injection
 
 # Route
-
+Route = [ ]
+for i in range(len(df)):
+    Route.append("Intramuscular (IM)")
+df["Route"] = Route
 
 # Telephone
-
+Telephone = [ ]
+for i in range(len(df)):
+    phone = ''
+    numbers = np.random.choice([i for i in range(0,9)], size=10)
+    for number in numbers:
+        phone = phone + str(number)
+    Telephone.append(phone)
+df["Telephone"] = Telephone
 
 # Email
+emails = [ ]
+for patient in df['Patient']:
+    patient = str(patient)
+    names = patient.split(' ')
+    user = '.'.join(names)
+    user = user+'@fake.com'
+    emails.append(user)
 
+df["Email"] = emails
 
 
 print(df)
