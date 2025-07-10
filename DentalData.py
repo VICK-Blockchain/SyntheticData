@@ -413,15 +413,15 @@ for i in range(len(df)):
         Child_Age.append("NA")
     else:
         if df["Age"][i] <= 18:
-            Child_Age.append(1)
+            Child_Age.append(int(1))
         elif 18 < df["Age"][i] <= 24:
-            Child_Age.append(2)
+            Child_Age.append(int(2))
         elif 24 < df["Age"][i] <= 30:
-            Child_Age.append(np.random.choice([3,4,5,6], size=1)[0])
+            Child_Age.append(int(np.random.choice([3,4,5,6], size=1)[0]))
         elif 30 < df["Age"][i] <= 40:
-            Child_Age.append(np.random.choice([i for i in range(1,15)], size=1)[0])
+            Child_Age.append(int(np.random.choice([i for i in range(1,15)], size=1)[0]))
         else:
-            Child_Age.append(np.random.choice([i for i in range(10,20)], size=1)[0])
+            Child_Age.append(int(np.random.choice([i for i in range(10,20)], size=1)[0]))
 df["Child_Age"] = Child_Age
 # Child Birth Date
 
