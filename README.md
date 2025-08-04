@@ -3,9 +3,8 @@
   <head>
   </head>
   <body>
-    <h1>VICK Blockchain Project</h1>
+    <h1>VICK Synthetic Immunization Data</h1>
     <div id="Introduction">
-      <p>HPV Informed Consent Knowledge Graph</p>
     </div>
   </body>
 </html>
